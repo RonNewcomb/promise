@@ -42,7 +42,7 @@
         }
 
         catch<R>(onRejected: (error: T) => R): Promise<R> {
-            return this.then(null, onRejected);
+            return this.then(undefined, onRejected);
         }
 
         static ajax(url: string, payload?: any): Promise<string> {
@@ -131,7 +131,7 @@
 
         protected constructor() {}
         protected status: "unresolved" | "FULFILLED" | "REJECTED" = "unresolved";
-        protected outcome: T = void 0;
+        protected outcome: T;
         protected queue: Deferred<T,any>[] = [];
 
         protected fulfill(x: T): Promise<T> {
@@ -139,15 +139,15 @@
             this.outcome = x;
             this.queue.forEach(deferred => {
                 if (typeof deferred.resolve !== 'function')// If onFulfilled is not a function, it must be ignored
-                    return deferred.promise.fulfill(x);    // If onFulfilled is not a function and promise1 is fulfilled, promise2 must be fulfilled with the same value as promise1
-
-                Promise.nextTickFn((): void => {
-                    try {
-                        Promise.Resolve(deferred.promise, deferred.resolve(x));
-                    } catch (e) {
-                        deferred.promise.reject(e);
-                    }
-                }, deferred.promise);
+                    deferred.promise.fulfill(x);    // If onFulfilled is not a function and promise1 is fulfilled, promise2 must be fulfilled with the same value as promise1
+                else
+                    Promise.nextTickFn((): void => {
+                        try {
+                            Promise.Resolve(deferred.promise, deferred.resolve(x));
+                        } catch (e) {
+                            deferred.promise.reject(e);
+                        }
+                    }, deferred.promise);
             });
             return this;
         }
@@ -156,16 +156,16 @@
             this.status = "REJECTED";
             this.outcome = error;
             this.queue.forEach(deferred => {
-                if (typeof deferred.reject !== 'function')// If onRejected is not a function, it must be ignored
-                    return deferred.promise.reject(error);// If onRejected is not a function and promise1 is rejected, promise2 must be rejected with the same value as promise1
-
-                Promise.nextTickFn((): void => {
-                    try {
-                        Promise.Resolve(deferred.promise, deferred.reject(error));
-                    } catch (e) {
-                        deferred.promise.reject(e);
-                    }
-                }, deferred.promise);
+                if (typeof deferred.reject !== 'function') // If onRejected is not a function, it must be ignored
+                    deferred.promise.reject(error);// If onRejected is not a function and promise1 is rejected, promise2 must be rejected with the same value as promise1
+                else
+                    Promise.nextTickFn((): void => {
+                        try {
+                            Promise.Resolve(deferred.promise, deferred.reject(error));
+                        } catch (e) {
+                            deferred.promise.reject(e);
+                        }
+                    }, deferred.promise);
             });
             return this;
         }
