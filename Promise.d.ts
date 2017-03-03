@@ -1,4 +1,4 @@
-asddeclare module Lifelong {
+declare module Lifelong {
     class Promise<T> {
         then<R>(onFulfilled?: (input: T) => R, onRejected?: (error: T) => R): Promise<R>;
         catch<R>(onRejected: (error: T) => R): Promise<R>;
