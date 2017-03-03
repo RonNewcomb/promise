@@ -1,0 +1,22 @@
+{
+  "bin": "testing/cli.js",
+  "browser": {
+    "mocha": false
+  },
+  "dependencies": {
+    "mocha": "^2.5.3",
+    "sinon": "^1.10.3",
+    "underscore": "~1.8.3",
+    "good-mocha-html-reporter": "^2.0.1"
+  },
+  "description": "Implementation for Promises/A+ 1.1.0",
+  "implements": [ "Promises/A+ 1.1.0" ],
+  "keywords": [ "promises", "promises-aplus", "typescript", "promise", "clean", "understandable", "clear" ],
+  "main": "testing/programmaticRunner.js",
+  "name": "lifelong.promise",
+  "private": true,
+  "scripts": {
+    "test": "mocha  testing/cli.js  Promise.js  testing/tests -R good-mocha-html-reporter -p TestResults.html"
+  },
+  "version": "1.0.0"
+}
